@@ -88,20 +88,20 @@ workflows:
       - build
       - build-image:
           name: build-microservice
-          dockerfile: deployments/Dockerfile
+          dockerfile: Dockerfile
           path: .
-          service-name: my-service
-          maintainer: my-maintainer@example.com
-          jar-file-name: my-application.jar
-          jar-file-path: ./target
-          micro-service-name: my-microservice
+          service-name: code_maven_ecs
+          maintainer: mdfaizqureshi09@gmail.com
+          jar-file-name: micro_service_name-1.0.war
+          jar-file-path: ./target/micro_service_name-1.0.war
+          micro-service-name: micro_service_name
       - push-image:
           requires:
             - build-image  # Ensure `push-image` runs after `build-image`
           dockerfile: deployments/Dockerfile
           path: .
-          service-name: my-service
-          maintainer: my-maintainer@example.com
-          jar-file-name: my-application.jar
-          jar-file-path: ./target
-          micro-service-name: my-microservice
+          service-name: code_maven_ecs
+          maintainer: mdfaizqureshi09@gmail.com
+          jar-file-name: micro_service_name-1.0.war
+          jar-file-path: ./target/micro_service_name-1.0.war
+          micro-service-name: micro_service_name
