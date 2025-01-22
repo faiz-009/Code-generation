@@ -72,6 +72,30 @@ jobs:
     docker:
       - image: cimg/openjdk:21.0.2
     parameters:
+      dockerfile:
+        default: deployments/Dockerfile
+        description: Name of Dockerfile to use. Defaults to `deployments/Dockerfile`.
+        type: string
+      path:
+        default: .
+        description: Path to the directory containing your Dockerfile and build context. Defaults to `.`.
+        type: string
+      service-name:
+        default: SERVICE_NAME
+        description: The name of the service.
+        type: string
+      maintainer:
+        default: EVERESTEK_MAINTAINER
+        description: The name and email of the Dockerfile maintainer.
+        type: string
+      jar-file-name:
+        default: JAR_FILE_NAME
+        description: The name of the JAR file generated.
+        type: string
+      jar-file-path:
+        default: JAR_FILE_PATH
+        description: The path where the generated JAR file is located.
+        type: string
       micro-service-name:
         default: MICRO_SERVICE_NAME
         description: The name of the microservice.
