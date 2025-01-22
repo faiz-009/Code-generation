@@ -1,16 +1,22 @@
 version: 2.1
+
+# Define the job
 jobs:
   build_test:
+    docker:
+      - image: cimg/openjdk:21.0.2
     steps:
       - checkout
       - run:
-          name: install dependencies
+          name: Install dependencies
           command: ./mvnw dependency:resolve
       - run:
-          name: Maven install
+          name: Build and Install
           command: ./mvnw clean install
 
+# Define the workflow
 workflows:
-  build_test:
+  version: 2
+  build_test_workflow:
     jobs:
       - build_test
