@@ -2,86 +2,40 @@ version: 2.1
 
 # Define the jobs
 jobs:
+  # The 'build' job will compile the application using Maven.
   build:
     docker:
+      # Specify the Docker image used for this job, which includes OpenJDK 21.
+      # This will provide a Java environment for building the application.
       - image: cimg/openjdk:21.0.2
     steps:
+      # Checkout the latest code from the repository.
       - checkout
+
+      # Set execute permission for the Maven wrapper script (mvnw) to ensure it's executable.
       - run:
           name: Set Execute Permission for Maven Wrapper
           command: chmod +x ./mvnw
+
+      # Resolve project dependencies using Maven.
+      # This step will download any required dependencies specified in the pom.xml file.
       - run:
           name: Install dependencies
           command: ./mvnw dependency:resolve
+
+      # Build the project and package it into a JAR/WAR file using Maven.
+      # The 'clean' command removes any previously compiled artifacts,
+      # and 'install' compiles, tests, and installs the package locally.
       - run:
           name: Build and Install
           command: ./mvnw clean install
 
-  build-image-and-push-image:
-    docker:
-      - image: cimg/openjdk:21.0.2
-    parameters:
-      dockerfile:
-        default: deployments/Dockerfile
-        description: Name of Dockerfile to use. Defaults to `deployments/Dockerfile`.
-        type: string
-      path:
-        default: .
-        description: Path to the directory containing your Dockerfile and build context. Defaults to `.`.
-        type: string
-      service-name:
-        default: SERVICE_NAME
-        description: The name of the service.
-        type: string
-      maintainer:
-        default: EVERESTEK_MAINTAINER
-        description: The name and email of the Dockerfile maintainer.
-        type: string
-      jar-file-name:
-        default: JAR_FILE_NAME
-        description: The name of the JAR file generated.
-        type: string
-      jar-file-path:
-        default: JAR_FILE_PATH
-        description: The path where the generated JAR file is located.
-        type: string
-      micro-service-name:
-        default: MICRO_SERVICE_NAME
-        description: The name of the microservice.
-        type: string
-    steps:
-      - checkout
-      - setup_remote_docker
-      - run:
-          name: Set Environment Variable for Timestamp
-          command: echo "export TIMESTAMP=$(date +\"%Y%m%d%H%M%S\")" >> $BASH_ENV
-      - run:
-          name: Build Docker Image
-          command: |
-            docker build \
-              --build-arg SERVICE_NAME=<< parameters.service-name >> \
-              --build-arg EVERESTEK_MAINTAINER=<< parameters.maintainer >> \
-              --build-arg JAR_FILE_PATH=<< parameters.jar-file-path >> \
-              --build-arg JAR_FILE_NAME=<< parameters.jar-file-name >> \
-              --build-arg MICRO_SERVICE_NAME=<< parameters.micro-service-name >> \
-              -f << parameters.dockerfile >> \
-              -t << parameters.micro-service-name >>:1.0.0-${TIMESTAMP}_SNAPSHOT \
-              << parameters.path >>
-            echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
-            docker push << parameters.micro-service-name >>:1.0.0-${TIMESTAMP}_SNAPSHOT
-
 # Define the workflow
 workflows:
-  version: 2
+  version: 2  # Specify the version of workflows (version 2 is the latest).
   build-test-workflow:
+    # List of jobs to run in the workflow.
+    # This workflow runs the 'build' job.
     jobs:
-      - build
-      - build-image-and-push-image:
-          name: build-microservice
-          dockerfile: Dockerfile
-          path: .
-          service-name: code_maven_ecs
-          maintainer: mdfaizqureshi09@gmail.com
-          jar-file-name: micro_service_name-1.0.war
-          jar-file-path: ./target/micro_service_name-1.0.war
-          micro-service-name: micro_service_name
+      - build  # The 'build' job is the only job in this workflow.
+
