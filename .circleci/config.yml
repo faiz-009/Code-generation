@@ -8,6 +8,9 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Set Execute Permission for Maven Wrapper
+          command: chmod +x ./mvnw
+      - run:
           name: Install dependencies
           command: ./mvnw dependency:resolve
       - run:
