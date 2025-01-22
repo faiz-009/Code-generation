@@ -71,6 +71,11 @@ jobs:
   push-image:
     docker:
       - image: cimg/openjdk:21.0.2
+    parameters:
+      micro-service-name:
+        default: MICRO_SERVICE_NAME
+        description: The name of the microservice.
+        type: string
     steps:
       - checkout
       - setup_remote_docker
