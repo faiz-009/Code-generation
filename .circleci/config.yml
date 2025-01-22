@@ -1,35 +1,16 @@
 version: 2.1
 jobs:
-  build-image:
-    docker:
-      - image: {DOCKER_IMAGE_NAME}
-    parameters:
-      dockerfile:
-        default: deployments/Dockerfile
-        description: Name of dockerfile to use. Defaults to Dockerfile
-        type: string
-      path:
-        default: .
-        description: Path to the directory containing your Dockerfile and build context. Defaults to . (working directory)
-        type: string
-
+  build_test:
     steps:
       - checkout
-      - setup_remote_docker
       - run:
-          name: Build image
-          command:
-            # build docker image with latest tag
-            # docker build -f <<parameters.dockerfile>> -t $<<parameters.account-url>>/<<parameters.repo>>:latest<<parameters.tag-suffix>> <<parameters.path>>
-            docker build -f <<parameters.dockerfile>> -t MICRO_SERVICE:latest .
+          name: install dependencies
+          command: ./mvnw dependency:resolve
+      - run:
+          name: Maven install
+          command: ./mvnw clean install
+
 workflows:
-  build:
+  build_test:
     jobs:
-      - build-image:
-          name: dev_build_MICRO_SERVICE
-          tag-suffix: ".dev"
-          repo: accelerator-tools
-          filters:
-            branches:
-              only:
-                - dev
+      - build_test
