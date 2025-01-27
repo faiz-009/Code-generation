@@ -29,13 +29,45 @@ jobs:
       - run:
           name: Build and Install
           command: ./mvnw clean install
+  docker-build:
+    docker:
+      # Use the Docker image that includes Docker CLI for building Docker images.
+      - image: cimg/base:stable
+    steps:
+      # Checkout the latest code from the repository.
+      - checkout
+
+      # Authenticate with Docker Hub or other registry (optional, if pushing the image).
+      - setup_remote_docker:
+          version: 20.10.21
+      - run:
+          name: Log in to Docker Hub
+          command: echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+
+      # Build the Docker image.
+      - run:
+          name: Build Docker Image
+          command: |
+            docker build \
+              --build-arg SERVICE_NAME=Code-generation \
+              --build-arg EVERESTEK_MAINTAINER=faiz.qureshi@everestek.com \
+              --build-arg JAR_FILE_PATH=target/sftp-connector-1.0.war \
+              --build-arg JAR_FILE_NAME=sftp-connector-1.0.war \
+              -t sftp-connector:latest .
+
+      # Push the Docker image to a registry (optional).
+      - run:
+          name: Push Docker Image
+          command: docker push my-docker-repo/my-service:latest
 
 # Define the workflow
 workflows:
   version: 2  # Specify the version of workflows (version 2 is the latest).
   build-test-workflow:
     # List of jobs to run in the workflow.
-    # This workflow runs the 'build' job.
+    # This workflow runs the 'build' and 'docker-build' jobs sequentially.
     jobs:
-      - build  # The 'build' job is the only job in this workflow.
-
+      - build
+      - docker-build:
+          requires:
+            - build  # Ensure the 'build' job completes successfully before running 'docker-build'.
