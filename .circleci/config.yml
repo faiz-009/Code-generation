@@ -36,6 +36,8 @@ jobs:
     steps:
       # Checkout the latest code from the repository.
       - checkout
+      - setup_remote_docker:
+          version: default
 
       - run:
           name: Log in to Docker Hub
