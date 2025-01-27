@@ -18,7 +18,7 @@ jobs:
           command: chmod +x ./mvnw
 
       # Resolve project dependencies using Maven.
-      # This step will download any required dependencies specified in the pom.xml file.
+      # This step will download any required dependencies specified in pom.xml file.
       - run:
           name: Install dependencies
           command: ./mvnw dependency:resolve
