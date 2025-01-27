@@ -1,0 +1,41 @@
+version: 2.1
+
+# Define the jobs
+jobs:
+  # The 'build' job will compile the application using Maven.
+  build:
+    docker:
+      # Specify the Docker image used for this job, which includes OpenJDK 21.
+      # This will provide a Java environment for building the application.
+      - image: cimg/openjdk:21.0.2
+    steps:
+      # Checkout the latest code from the repository.
+      - checkout
+
+      # Set execute permission for the Maven wrapper script (mvnw) to ensure it's executable.
+      - run:
+          name: Set Execute Permission for Maven Wrapper
+          command: chmod +x ./mvnw
+
+      # Resolve project dependencies using Maven.
+      # This step will download any required dependencies specified in the pom.xml file.
+      - run:
+          name: Install dependencies
+          command: ./mvnw dependency:resolve
+
+      # Build the project and package it into a JAR/WAR file using Maven.
+      # The 'clean' command removes any previously compiled artifacts,
+      # and 'install' compiles, tests, and installs the package locally.
+      - run:
+          name: Build and Install
+          command: ./mvnw clean install
+
+# Define the workflow
+workflows:
+  version: 2  # Specify the version of workflows (version 2 is the latest).
+  build-test-workflow:
+    # List of jobs to run in the workflow.
+    # This workflow runs the 'build' job.
+    jobs:
+      - build  # The 'build' job is the only job in this workflow.
+
