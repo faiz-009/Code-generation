@@ -32,14 +32,11 @@ jobs:
   docker-build:
     docker:
       # Use the Docker image that includes Docker CLI for building Docker images.
-      - image: cimg/base:stable
+      - image: cimg/openjdk:21.0.2
     steps:
       # Checkout the latest code from the repository.
       - checkout
 
-      # Authenticate with Docker Hub or other registry (optional, if pushing the image).
-      - setup_remote_docker:
-          version: 20.10.21
       - run:
           name: Log in to Docker Hub
           command: echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
