@@ -58,6 +58,11 @@ jobs:
       - run:
           name: Push Docker Image
           command: docker push my-docker-repo/my-service:latest
+            # Persist the target directory to share it with other jobs.
+      - persist_to_workspace:
+          root: .
+          paths:
+           - target
 
 # Define the workflow
 workflows:
